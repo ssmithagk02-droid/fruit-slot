@@ -12,11 +12,11 @@ const fruits = [
 ];
 
 const paylines = [
-  { name: "Top Row",       pattern: [[0, 0], [1, 0], [2, 0]] },
-  { name: "Middle Row",    pattern: [[0, 1], [1, 1], [2, 1]] },
-  { name: "Bottom Row",    pattern: [[0, 2], [1, 2], [2, 2]] },
-  { name: "V-Shape Up",    pattern: [[0, 0], [1, 1], [2, 0]] },
-  { name: "V-Shape Down",  pattern: [[0, 2], [1, 1], [2, 2]] }
+  { name: "Top Row",      pattern: [[0, 0], [1, 0], [2, 0]] },
+  { name: "Middle Row",   pattern: [[0, 1], [1, 1], [2, 1]] },
+  { name: "Bottom Row",   pattern: [[0, 2], [1, 2], [2, 2]] },
+  { name: "V-Shape Up",   pattern: [[0, 0], [1, 1], [2, 0]] },
+  { name: "V-Shape Down", pattern: [[0, 2], [1, 1], [2, 2]] }
 ];
 
 const uiImages = {
@@ -76,6 +76,8 @@ let particleContainer;
 let activeParticles = [];
 let flowerTextures = [];
 
+let winAnimTimer = 0;
+
 async function init() {
   setupApp();
   await loadAssets();
@@ -98,6 +100,7 @@ function setupApp() {
 
   app.ticker.add(updateParticles);
   app.ticker.add(updateTweening);
+  app.ticker.add(animateWinnerBanner);
 
   window.addEventListener('resize', centerGameContainer);
 }
@@ -194,16 +197,29 @@ function addReelsContainer() {
   reelsContainer.addChild(paylineGraphics);
 }
 
+/* ==========================================================================
+   WIN TEXT: STYLIZED WIN OVERLAY BANNER
+   ========================================================================== */
 function addWinnerBanner() {
   winnerBannerText = new PIXI.Text('', {
-    fontFamily: 'Arial', fontSize: 26, fontWeight: '900', fill: '#fff200',
-    stroke: '#ff0000', strokeThickness: 4, align: 'center'
+    fontFamily: '"Trebuchet MS", "Arial Black", sans-serif', 
+    fontSize: 34, 
+    fontWeight: '900', 
+    fill: ['#ffffff', '#ffe600', '#ff7700'],
+    stroke: '#2b0000', 
+    strokeThickness: 6, 
+    align: 'center',
+    dropShadow: true,
+    dropShadowColor: '#000000',
+    dropShadowBlur: 8,
+    dropShadowDistance: 4
   });
   winnerBannerText.name = 'winnerBanner';
   winnerBannerText.anchor.set(0.5);
   winnerBannerText.x = GAME_WIDTH / 2;
   winnerBannerText.y = REELS_Y + REELS_HEIGHT / 2;
   winnerBannerText.visible = false;
+  winnerBannerText.alpha = 0;
   gameContainer.addChild(winnerBannerText);
 }
 
@@ -567,15 +583,42 @@ function triggerWinEffects(winningPatterns, prize, comboMultiplier, matchCount) 
   }, 1200);
 }
 
+/* ==========================================================================
+   WIN OVERLAY ANIMATIONS: POP-IN & CONTINUOUS FLOATING PULSE
+   ========================================================================== */
 function showWinnerBanner(matchCount, prize, comboMultiplier) {
   winnerBannerText.text = matchCount > 1
-    ? `${matchCount} MATCHES!\n$${prize}\n(${comboMultiplier}x BONUS)`
-    : `WIN\n$${prize}`;
+    ? `✨ ${matchCount} MATCHES! ✨\n$${prize}\n(${comboMultiplier}x BONUS)`
+    : `🏆 WIN ! 🏆\n$${prize}`;
+
   winnerBannerText.visible = true;
+  winnerBannerText.scale.set(0.2);
+  winnerBannerText.alpha = 0;
+  winAnimTimer = 0;
+
+  tweenTo(winnerBannerText, 'alpha', 1, 300, (t) => t);
+  tweenTo(winnerBannerText.scale, 'x', 1, 500, backout(1.8));
+  tweenTo(winnerBannerText.scale, 'y', 1, 500, backout(1.8));
+}
+
+function animateWinnerBanner(delta) {
+  if (winnerBannerText && winnerBannerText.visible) {
+    winAnimTimer += 0.06 * delta;
+    
+    // Smooth pulse & floating movement
+    const baseScale = 1;
+    const pulse = Math.sin(winAnimTimer) * 0.06;
+    const floatY = Math.cos(winAnimTimer * 0.8) * 4;
+
+    winnerBannerText.scale.set(baseScale + pulse);
+    winnerBannerText.y = (REELS_Y + REELS_HEIGHT / 2) + floatY;
+  }
 }
 
 function hideWinnerBanner() {
   winnerBannerText.visible = false;
+  winnerBannerText.alpha = 0;
+  winnerBannerText.scale.set(0);
 }
 
 function showMessage(text) {
