@@ -200,7 +200,7 @@ function addReelsContainer() {
 function addWinnerBanner() {
   winnerBannerText = new PIXI.Text('', {
     fontFamily: '"Trebuchet MS", "Arial Black", sans-serif', 
-    fontSize: 34, 
+    fontSize: 54, 
     fontWeight: '900', 
     fill: ['#ffffff', '#ffe600', '#ff7700'],
     stroke: '#2b0000', 
