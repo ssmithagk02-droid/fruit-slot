@@ -197,9 +197,6 @@ function addReelsContainer() {
   reelsContainer.addChild(paylineGraphics);
 }
 
-/* ==========================================================================
-   WIN TEXT: STYLIZED WIN OVERLAY BANNER
-   ========================================================================== */
 function addWinnerBanner() {
   winnerBannerText = new PIXI.Text('', {
     fontFamily: '"Trebuchet MS", "Arial Black", sans-serif', 
@@ -583,9 +580,6 @@ function triggerWinEffects(winningPatterns, prize, comboMultiplier, matchCount) 
   }, 1200);
 }
 
-/* ==========================================================================
-   WIN OVERLAY ANIMATIONS: POP-IN & CONTINUOUS FLOATING PULSE
-   ========================================================================== */
 function showWinnerBanner(matchCount, prize, comboMultiplier) {
   winnerBannerText.text = matchCount > 1
     ? `✨ ${matchCount} MATCHES! ✨\n$${prize}\n(${comboMultiplier}x BONUS)`
