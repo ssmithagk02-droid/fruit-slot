@@ -280,14 +280,14 @@ function createBetButton(label, x, y, onClick) {
   button.y = y;
 
   const background = new PIXI.Graphics();
-  background.beginFill(0xf3f38e);
-  background.lineStyle(2, 0xff0000);
+  background.beginFill(0x000000);
+  background.lineStyle(2, 0x000000);
   background.drawRoundedRect(-BET_BUTTON_SIZE / 2, -BET_BUTTON_SIZE / 2, BET_BUTTON_SIZE, BET_BUTTON_SIZE, 5);
   background.endFill();
   button.addChild(background);
 
   const text = new PIXI.Text(label, {
-    fontFamily: 'Arial', fontSize: 18, fontWeight: 'bold', fill: '#ff0000'
+    fontFamily: 'Arial', fontSize: 18, fontWeight: 'bold', fill: '#ffffff'
   });
   text.anchor.set(0.5);
   button.addChild(text);
@@ -626,7 +626,7 @@ function updateStatsDisplay() {
 
 function changeBet(n) {
   if (isSpinning) return;
-  bet = Math.max(5, Math.min(100, bet + n));
+  bet = Math.max(5, Math.min(500, bet + n));
   updateStatsDisplay();
 }
 
